@@ -1,6 +1,6 @@
 # DEWI JATENG
 
-Platform terpadu transparansi anggaran kas desa wisata, pengawasan fasilitas publik, dan mitigasi risiko kepatuhan bagi 1.000 desa wisata di Jawa Tengah. Sistem ini menghubungkan pencatatan anggaran APBDes dan bagi hasil kas desa dengan penanganan pengaduan berbatas waktu (SLA) serta audit fisik partisipatif oleh warga berbasis geolokasi.
+Platform terpadu transparansi anggaran kas desa wisata, pengawasan fasilitas publik, dan mitigasi risiko kepatuhan bagi desa wisata di Jawa Tengah. Sistem ini menghubungkan pencatatan anggaran APBDes dan bagi hasil kas desa dengan penanganan pengaduan serta audit fisik partisipatif oleh warga berbasis geolokasi.
 
 Repository ini dikembangkan oleh Tim sotodiensracing (Universitas Dian Nuswantoro) dalam rangka kompetisi Web In Action (WIA) 2026 / Multimedia In Action (MIA) 2026, Universitas Pembangunan Nasional "Veteran" Jakarta.
 
