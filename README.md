@@ -96,9 +96,9 @@ Proyek saat ini berada pada tahap **First Draft Submission (01 November 2026)**:
   - Rekapitulasi metrik realisasi dana (PADes, Dana Desa, CSR).
   - Grafik visual alokasi anggaran desa.
   - Buku Kas Umum Digital (`CashbookTable`) dengan filter kategori, pencarian transaksi, dan verifikasi kuitansi nota.
-- [x] **Halaman Pengelola Desa (`/pengelola`)**:
+- [ ] **Halaman Pengelola Desa (`/pengelola`)**:
   - Papan Pengelolaan Tiket (`PengelolaTicketBoard`) dengan tab status alur kerja (Masuk, Ditinjau, Dikerjakan, Selesai) dan pelacakan SLA penanganan.
-- [x] **Navigasi & Akses Sementara**:
+- [ ] **Navigasi & Akses Sementara**:
   - Penonaktifan rute sementara (`/lapor`, `/edukasi`, tombol Masuk) di Navbar dengan pengarahan ke formulir Beranda.
 - [ ] **Integrasi Backend & Database Supabase**: Migrasi skema database live, PostGIS geofencing, dan autentikasi peran pengelola BUMDes.
 - [ ] **Integrasi Modul AI**: AI OCR pemindai kuitansi material dan verifikasi metadata EXIF foto perbaikan.
