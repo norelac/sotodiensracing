@@ -1,46 +1,241 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FileText,
   UploadCloud,
   ChevronDown,
   MapPin,
   CheckCircle2,
-  X,
   FileCheck2,
-  Loader2
+  Loader2,
+  Search,
+  Check
 } from 'lucide-react';
 
-interface VillageLocation {
-  name: string;
-  regency: string;
-  district: string;
-  xPercent: number; // For interactive SVG pin placement on Central Java map
-  yPercent: number;
+interface LocationCoord {
+  lat: number;
+  lng: number;
+  displayName: string;
 }
 
-const VILLAGE_PINS: VillageLocation[] = [
-  { name: 'Desa Candirejo', district: 'Borobudur', regency: 'Kabupaten Magelang', xPercent: 55, yPercent: 68 },
-  { name: 'Desa Limpakuwus', district: 'Sumbang', regency: 'Kabupaten Banyumas', xPercent: 28, yPercent: 60 },
-  { name: 'Desa Getas', district: 'Singorojo', regency: 'Kabupaten Kendal', xPercent: 53, yPercent: 36 },
-  { name: 'Desa Berjo', district: 'Ngargoyoso', regency: 'Kabupaten Karanganyar', xPercent: 78, yPercent: 65 },
-  { name: 'Desa Dieng Kulon', district: 'Batur', regency: 'Kabupaten Banjarnegara', xPercent: 42, yPercent: 45 },
-];
+const KNOWN_LOCATIONS: Record<string, LocationCoord> = {
+  pamularsih: {
+    lat: -6.9928,
+    lng: 110.3957,
+    displayName: 'Jl. Pamularsih Raya, Bongsari, Semarang Barat, Kota Semarang',
+  },
+  'jl pamularsih': {
+    lat: -6.9928,
+    lng: 110.3957,
+    displayName: 'Jl. Pamularsih Raya, Bongsari, Semarang Barat, Kota Semarang',
+  },
+  candirejo: {
+    lat: -7.6186,
+    lng: 110.2317,
+    displayName: 'Desa Candirejo, Borobudur, Kabupaten Magelang',
+  },
+  borobudur: {
+    lat: -7.6079,
+    lng: 110.2038,
+    displayName: 'Kawasan Wisata Borobudur, Kabupaten Magelang',
+  },
+  limpakuwus: {
+    lat: -7.3197,
+    lng: 109.2394,
+    displayName: 'Desa Limpakuwus (The Geong), Sumbang, Kabupaten Banyumas',
+  },
+  getas: {
+    lat: -7.1124,
+    lng: 110.2831,
+    displayName: 'Desa Wisata Getas (Tubing Genting), Singorojo, Kabupaten Kendal',
+  },
+  berjo: {
+    lat: -7.6253,
+    lng: 111.1278,
+    displayName: 'Desa Berjo (Air Terjun Jumog), Ngargoyoso, Kabupaten Karanganyar',
+  },
+  dieng: {
+    lat: -7.2062,
+    lng: 109.9042,
+    displayName: 'Desa Dieng Kulon, Batur, Kabupaten Banjarnegara',
+  },
+  semarang: {
+    lat: -6.9932,
+    lng: 110.4203,
+    displayName: 'Kota Semarang, Jawa Tengah',
+  },
+  'simpang lima': {
+    lat: -6.9904,
+    lng: 110.4229,
+    displayName: 'Simpang Lima, Kota Semarang',
+  },
+};
 
 export default function HomeReportForm() {
   const [selectedTitle, setSelectedTitle] = useState('');
-  const [address, setAddress] = useState('Desa Candirejo, Borobudur, Kabupaten Magelang');
-  const [activePin, setActivePin] = useState<string>('Desa Candirejo');
+  const [address, setAddress] = useState('Jl. Pamularsih Raya, Semarang Barat');
   const [description, setDescription] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successTicket, setSuccessTicket] = useState<string | null>(null);
 
-  const handleSelectPin = (village: VillageLocation) => {
-    setActivePin(village.name);
-    setAddress(`${village.name}, Kec. ${village.district}, ${village.regency}`);
+  const [coords, setCoords] = useState<{ lat: number; lng: number }>({
+    lat: -6.9928,
+    lng: 110.3957,
+  });
+  const [locationLabel, setLocationLabel] = useState<string>(
+    'Jl. Pamularsih Raya, Bongsari, Semarang Barat, Kota Semarang'
+  );
+  const [isSearchingMap, setIsSearchingMap] = useState<boolean>(false);
+
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+
+  // Initialize Leaflet Map on Client
+  useEffect(() => {
+    if (typeof window === 'undefined' || !mapContainerRef.current) return;
+    let isMounted = true;
+
+    import('leaflet').then((L) => {
+      if (!isMounted || !mapContainerRef.current) return;
+      if (mapInstanceRef.current) return;
+
+      // Create Leaflet Map centered on Pamularsih / Jateng
+      const map = L.map(mapContainerRef.current, {
+        center: [coords.lat, coords.lng],
+        zoom: 15,
+        zoomControl: true,
+        scrollWheelZoom: false,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map);
+
+      // Custom Red Pin Marker
+      const pinIcon = L.divIcon({
+        className: 'custom-pin-marker',
+        html: `
+          <div style="transform: translate(-50%, -100%);">
+            <div style="background-color: #EA4335; width: 34px; height: 34px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 3px solid #FFFFFF;">
+              <svg style="width: 18px; height: 18px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+      });
+
+      const marker = L.marker([coords.lat, coords.lng], {
+        icon: pinIcon,
+        draggable: true,
+      }).addTo(map);
+
+      marker.on('dragend', () => {
+        const pos = marker.getLatLng();
+        setCoords({ lat: pos.lat, lng: pos.lng });
+        setLocationLabel(`Titik Pin GPS: ${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`);
+      });
+
+      map.on('click', (e: any) => {
+        marker.setLatLng(e.latlng);
+        setCoords({ lat: e.latlng.lat, lng: e.latlng.lng });
+        setLocationLabel(`Titik Pin GPS: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`);
+      });
+
+      mapInstanceRef.current = map;
+      markerRef.current = marker;
+    });
+
+    return () => {
+      isMounted = false;
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  // Update map position and marker when coords change
+  const moveMapTo = (lat: number, lng: number, zoomLevel = 15) => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo([lat, lng], zoomLevel, {
+        duration: 1.2,
+      });
+    }
+    if (markerRef.current) {
+      markerRef.current.setLatLng([lat, lng]);
+    }
+    setCoords({ lat, lng });
   };
+
+  // Dynamic geocoding when user types an address
+  const handleGeocode = async (queryText: string) => {
+    const clean = queryText.trim().toLowerCase();
+    if (!clean) return;
+
+    setIsSearchingMap(true);
+
+    // 1. Instant check in local dictionary (e.g. pamularsih, candirejo, limpakuwus)
+    for (const [key, val] of Object.entries(KNOWN_LOCATIONS)) {
+      if (clean.includes(key)) {
+        moveMapTo(val.lat, val.lng, 16);
+        setLocationLabel(val.displayName);
+        setIsSearchingMap(false);
+        return;
+      }
+    }
+
+    // 2. Fallback to OpenStreetMap Nominatim API for general addresses
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+          queryText + ', Jawa Tengah, Indonesia'
+        )}`
+      );
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const item = data[0];
+        const newLat = parseFloat(item.lat);
+        const newLng = parseFloat(item.lon);
+        moveMapTo(newLat, newLng, 15);
+        setLocationLabel(item.display_name.split(',').slice(0, 3).join(', '));
+      } else {
+        const fallbackRes = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+            queryText
+          )}`
+        );
+        const fallbackData = await fallbackRes.json();
+        if (fallbackData && fallbackData.length > 0) {
+          const item = fallbackData[0];
+          const newLat = parseFloat(item.lat);
+          const newLng = parseFloat(item.lon);
+          moveMapTo(newLat, newLng, 15);
+          setLocationLabel(item.display_name.split(',').slice(0, 3).join(', '));
+        }
+      }
+    } catch {
+      // Keep existing map position if offline or network error
+    } finally {
+      setIsSearchingMap(false);
+    }
+  };
+
+  // Debounced input search
+  useEffect(() => {
+    if (!address.trim()) return;
+    const timer = setTimeout(() => {
+      handleGeocode(address);
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [address]);
 
   const handleFileDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -77,7 +272,7 @@ export default function HomeReportForm() {
               >
                 <option value="" disabled>Contoh: Pohon tumbang</option>
                 <option value="Akses ke curug buruk">Akses ke curug buruk & pagar pengaman lapuk</option>
-                <option value="Wastafel dan toilet kotor">Wastafel dan toilet kotor sekali / kran mati</option>
+                <option value="Wastafel dan toilet kotor sekali">Wastafel dan toilet kotor sekali / kran mati</option>
                 <option value="Pungli parkir liar">Pungutan liar parkir tanpa karcis resmi BUMDes</option>
                 <option value="Jembatan goyang">Jembatan titian kayu goyang dan berbahaya</option>
                 <option value="Tumpukan sampah">Tumpukan sampah plastik di area gardu pandang</option>
@@ -86,102 +281,68 @@ export default function HomeReportForm() {
             </div>
           </div>
 
-          {/* Alamat Lokasi */}
+          {/* Alamat Lokasi (Interactive Address Input) */}
           <div>
-            <label className="block text-xs font-bold text-[#0D2453] mb-1.5">
-              Alamat Lokasi
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-[#0D2453]">
+                Alamat Lokasi
+              </label>
+              {isSearchingMap ? (
+                <span className="text-[11px] text-blue-700 font-medium flex items-center gap-1">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Mencari di peta...
+                </span>
+              ) : (
+                <span className="text-[11px] text-emerald-700 font-medium flex items-center gap-1">
+                  <Check className="w-3 h-3" />
+                  Peta terhubung
+                </span>
+              )}
+            </div>
+
             <div className="relative">
               <input
                 type="text"
                 required
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Nama Desa, Kecamatan, Kabupaten"
+                placeholder="Ketik alamat (contoh: pamularsih, candirejo, dll)"
                 className="w-full bg-[#F5F5F5] border-0 rounded-xl px-4 py-3 pr-10 text-xs sm:text-sm text-[#0D2453] font-medium placeholder:text-[#767676] focus:ring-2 focus:ring-[#0D2453]/20 focus:outline-none"
               />
-              <MapPin className="w-4 h-4 text-blue-900 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#0D2453] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
-          {/* Tandai di Peta: Interactive Leaflet/SVG Pin Map */}
+          {/* Tandai di Peta: Live Leaflet / OpenStreetMap Pin Map */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-xs font-bold text-[#0D2453]">
-                Tandai di Peta (Klik pin lokasi)
+                Tandai di Peta (Geser atau klik lokasi pada peta)
               </label>
-              <span className="text-[11px] text-[#767676]">
-                Terpilih: <strong className="text-[#0D2453]">{activePin}</strong>
-              </span>
             </div>
 
-            {/* Stylized Interactive Central Java Map Container */}
-            <div className="relative w-full h-56 rounded-2xl overflow-hidden border border-[#EBEBEB] bg-[#E8ECEF] select-none group">
-              {/* Google Map / Terrain styled background with grid lines */}
-              <div
-                className="absolute inset-0 bg-[#E5ECF4] opacity-90"
-                style={{
-                  backgroundImage:
-                    'radial-gradient(#CBD5E1 1px, transparent 1px), linear-gradient(to right, #F1F5F9 1px, transparent 1px)',
-                  backgroundSize: '24px 24px',
-                }}
-              />
+            {/* Interactive Leaflet Map Container */}
+            <div className="relative w-full h-[260px] rounded-2xl overflow-hidden border border-[#EBEBEB] bg-[#E8ECEF] shadow-inner">
+              <div ref={mapContainerRef} className="w-full h-full z-0" />
 
-              {/* Central Java Terrain Visual Silhouettes */}
-              <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 400 200">
-                <path
-                  d="M20,120 Q80,90 140,110 T260,80 T380,100 L390,190 L10,190 Z"
-                  fill="#0D2453"
-                />
-              </svg>
-
-              {/* Map Controls pill in top left matching Figma */}
-              <div className="absolute top-2.5 left-2.5 flex gap-1 z-10 bg-white/95 backdrop-blur-xs rounded-lg p-1 shadow-xs border border-slate-200 text-[10px] font-semibold text-slate-700">
-                <span className="px-2 py-0.5 bg-slate-100 text-[#0D2453] rounded font-bold">Map</span>
-                <span className="px-2 py-0.5 text-slate-500">Satellite</span>
-              </div>
-
-              {/* Clickable Pins across Central Java Villages */}
-              {VILLAGE_PINS.map((pin) => {
-                const isActive = activePin === pin.name;
-                return (
-                  <button
-                    key={pin.name}
-                    type="button"
-                    onClick={() => handleSelectPin(pin)}
-                    style={{ left: `${pin.xPercent}%`, top: `${pin.yPercent}%` }}
-                    className="absolute -translate-x-1/2 -translate-y-full z-20 transition-transform hover:scale-110 focus:outline-none"
-                    title={`${pin.name} (${pin.regency})`}
-                  >
-                    <div className="flex flex-col items-center">
-                      {isActive && (
-                        <span className="px-2 py-0.5 rounded-md bg-[#0D2453] text-white text-[9px] font-bold shadow-md whitespace-nowrap mb-0.5 animate-bounce">
-                          {pin.name}
-                        </span>
-                      )}
-                      <div
-                        className={`w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-colors ${
-                          isActive
-                            ? 'bg-[#EA4335] text-white ring-4 ring-red-200'
-                            : 'bg-white text-[#0D2453] border border-slate-300 hover:bg-blue-50'
-                        }`}
-                      >
-                        <MapPin className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-
-              <div className="absolute bottom-2 right-2 text-[10px] text-slate-500 bg-white/80 px-2 py-0.5 rounded font-mono">
-                Jateng GPS Active
+              {/* Map Floating Status Pill */}
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 z-10 bg-white/95 backdrop-blur-xs rounded-xl px-3 py-2 border border-slate-200/80 shadow-md flex items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <MapPin className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                  <span className="text-[#0D2453] font-semibold truncate text-[11px]">
+                    {locationLabel}
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-500 font-mono shrink-0 hidden sm:inline">
+                  {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="space-y-4 flex flex-col justify-between h-full">
+        {/* Right Column (No awkward stretched empty gaps) */}
+        <div className="space-y-4">
           {/* Deskripsi */}
           <div>
             <label className="block text-xs font-bold text-[#0D2453] mb-1.5">
@@ -202,7 +363,7 @@ export default function HomeReportForm() {
             <label className="block text-xs font-bold text-[#0D2453] mb-1.5">
               Foto / Video Bukti
             </label>
-            <label className="border-2 border-dashed border-[#C1C1C1] hover:border-[#0D2453] rounded-2xl p-6 text-center bg-white cursor-pointer transition-colors flex flex-col items-center justify-center block">
+            <label className="border-2 border-dashed border-[#C1C1C1] hover:border-[#0D2453] rounded-2xl p-5 text-center bg-white cursor-pointer transition-colors flex flex-col items-center justify-center block">
               <input
                 type="file"
                 multiple
@@ -210,8 +371,8 @@ export default function HomeReportForm() {
                 onChange={handleFileDrop}
                 className="hidden"
               />
-              <UploadCloud className="w-8 h-8 text-[#0D2453]" />
-              <span className="text-xs font-bold text-[#0D2453] mt-2 block">
+              <UploadCloud className="w-7 h-7 text-[#0D2453]" />
+              <span className="text-xs font-bold text-[#0D2453] mt-1.5 block">
                 Unggah Foto / Video
               </span>
               <span className="text-[11px] text-[#767676] mt-0.5 block">
@@ -236,7 +397,7 @@ export default function HomeReportForm() {
           </div>
 
           {/* Checkbox Laporan Anonim / Privat */}
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex items-center gap-2 pt-0.5">
             <input
               id="anon-check"
               type="checkbox"
@@ -253,7 +414,7 @@ export default function HomeReportForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 rounded-xl bg-[#0D2453] hover:bg-[#132d66] text-white font-bold text-xs sm:text-sm transition-all shadow-xs active:scale-[0.99] flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-[#0D2453] hover:bg-[#132d66] text-white font-bold text-xs sm:text-sm transition-all shadow-xs active:scale-[0.99] flex items-center justify-center gap-2 mt-2"
           >
             {isSubmitting ? (
               <>

@@ -7,11 +7,9 @@ import {
   Compass,
   FileText,
   Coins,
-  BookOpen,
   Search,
   PlusCircle,
   BarChart2,
-  Info,
   Map,
   Instagram,
   Youtube,
@@ -25,21 +23,21 @@ import {
     <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
       <!-- Col 1: Brand & Contact -->
       <div class="space-y-4">
-        <h3 class="text-xl font-extrabold tracking-tight text-white">DEWI JATENG</h3>
+        <h3 class="text-xl sm:text-[22px] font-heading font-bold tracking-tight text-white">DEWI JATENG</h3>
         <p class="text-xs text-slate-300 leading-relaxed max-w-sm">
           Platform digital transparansi dana desa dan pelaporan fasilitas wisata di Jawa Tengah.
         </p>
         <div class="space-y-2.5 pt-2 text-xs text-slate-300">
           <div class="flex items-center gap-2.5">
-            <MapPin class="w-4 h-4 text-slate-400 shrink-0" />
+            <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
             <span>Jawa Tengah, Indonesia</span>
           </div>
           <div class="flex items-center gap-2.5">
-            <Mail class="w-4 h-4 text-slate-400 shrink-0" />
+            <Mail className="w-4 h-4 text-slate-400 shrink-0" />
             <span>[Email resmi pengelola]</span>
           </div>
           <div class="flex items-center gap-2.5">
-            <Phone class="w-4 h-4 text-slate-400 shrink-0" />
+            <Phone className="w-4 h-4 text-slate-400 shrink-0" />
             <span>(024) [Nomor Kontak Resmi]</span>
           </div>
         </div>
@@ -51,33 +49,33 @@ import {
         <ul class="space-y-3 text-xs text-slate-300">
           <li>
             <a href="/" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Home class="w-4 h-4 text-slate-400" />
+              <Home className="w-4 h-4 text-slate-400" />
               <span>Beranda</span>
             </a>
           </li>
           <li>
             <a href="/transparansi" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Compass class="w-4 h-4 text-slate-400" />
+              <Compass className="w-4 h-4 text-slate-400" />
               <span>Jelajah Desa Wisata</span>
             </a>
           </li>
           <li>
-            <a href="/lapor" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <FileText class="w-4 h-4 text-slate-400" />
+            <a href="/#buat-laporan" class="flex items-center gap-2.5 hover:text-white transition-colors">
+              <FileText className="w-4 h-4 text-slate-400" />
               <span>Lapor</span>
             </a>
           </li>
           <li>
             <a href="/transparansi" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Coins class="w-4 h-4 text-slate-400" />
+              <Coins className="w-4 h-4 text-slate-400" />
               <span>Transparansi Dana</span>
             </a>
           </li>
           <li>
-            <a href="/edukasi" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <BookOpen class="w-4 h-4 text-slate-400" />
-              <span>Edukasi & Panduan</span>
-            </a>
+            <span class="flex items-center gap-2.5 text-slate-400/60 cursor-not-allowed select-none">
+              <FileText className="w-4 h-4 text-slate-500/50" />
+              <span>Edukasi & Panduan (Segera)</span>
+            </span>
           </li>
         </ul>
       </div>
@@ -87,32 +85,26 @@ import {
         <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4">LAYANAN</h4>
         <ul class="space-y-3 text-xs text-slate-300">
           <li>
-            <a href="/lapor" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Search class="w-4 h-4 text-slate-400" />
+            <a href="/#buat-laporan" class="flex items-center gap-2.5 hover:text-white transition-colors">
+              <Search className="w-4 h-4 text-slate-400" />
               <span>Telusur Aduan</span>
             </a>
           </li>
           <li>
-            <a href="/lapor" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <PlusCircle class="w-4 h-4 text-slate-400" />
+            <a href="/#buat-laporan" class="flex items-center gap-2.5 hover:text-white transition-colors">
+              <PlusCircle className="w-4 h-4 text-slate-400" />
               <span>Buat Laporan</span>
             </a>
           </li>
           <li>
             <a href="/transparansi" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <BarChart2 class="w-4 h-4 text-slate-400" />
+              <BarChart2 className="w-4 h-4 text-slate-400" />
               <span>Statistik</span>
             </a>
           </li>
           <li>
-            <a href="/edukasi" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Info class="w-4 h-4 text-slate-400" />
-              <span>Tentang Platform</span>
-            </a>
-          </li>
-          <li>
             <a href="/transparansi" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Map class="w-4 h-4 text-slate-400" />
+              <Map className="w-4 h-4 text-slate-400" />
               <span>Peta Situs</span>
             </a>
           </li>
@@ -125,25 +117,25 @@ import {
         <ul class="space-y-3 text-xs text-slate-300">
           <li>
             <a href="#" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Instagram class="w-4 h-4 text-slate-400" />
+              <Instagram className="w-4 h-4 text-slate-400" />
               <span>Instagram</span>
             </a>
           </li>
           <li>
             <a href="#" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Youtube class="w-4 h-4 text-slate-400" />
+              <Youtube className="w-4 h-4 text-slate-400" />
               <span>YouTube</span>
             </a>
           </li>
           <li>
             <a href="#" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Twitter class="w-4 h-4 text-slate-400" />
+              <Twitter className="w-4 h-4 text-slate-400" />
               <span>Twitter / X</span>
             </a>
           </li>
           <li>
             <a href="#" class="flex items-center gap-2.5 hover:text-white transition-colors">
-              <Facebook class="w-4 h-4 text-slate-400" />
+              <Facebook className="w-4 h-4 text-slate-400" />
               <span>Facebook</span>
             </a>
           </li>

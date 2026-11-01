@@ -8,24 +8,12 @@ Repository ini dikembangkan oleh Tim sotodiensracing (Universitas Dian Nuswantor
 
 ## Tech Stack
 
-### Frontend & Backend (Fullstack)
-- Framework: Next.js 14 (App Router, React Server Components, Server Actions, Route Handlers)
-- Bahasa: TypeScript / JavaScript
-- Styling: Tailwind CSS 3.4
-- Komponen & Ikon: Lucide React
-- Peta & Geospasial: Leaflet.js & OpenStreetMap
-
-### Basis Data & Penyimpanan
-- Database: PostgreSQL (Relational Database Management System)
-- Ekstensi Spasial: PostGIS (Kueri Geofencing `ST_DWithin` radius <500 meter)
-- Layanan BaaS & Auth: Supabase (PostgreSQL, Row-Level Security, Database Webhooks)
-- Penyimpanan Berkas: Supabase Storage (Dokumen APBDes, foto perbaikan, dan kuitansi nota)
-
-### Layanan Kecerdasan Buatan (AI Engine)
-- OCR & Receipt Auditor: Vision API untuk ekstraksi data kuitansi toko material dan deteksi markup harga terhadap Standar Satuan Harga (SSH) Pemprov Jateng
-- Image Verification: Computer Vision & validasi metadata EXIF (tanggal dan koordinat GPS) untuk verifikasi foto hasil perbaikan
-- Voice Transcription: Whisper API untuk konversi rekaman suara aduan darurat menjadi teks
-- Decision Support: Dynamic Trust Score Engine (algoritma kepatuhan 0–100 pada Command Center)
+- **Frontend & Island Architecture:** [Astro 4.x](https://astro.build/) & [React 18](https://react.dev/)
+- **Bahasa Pemrograman:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS 3.4](https://tailwindcss.com/)
+- **Animasi & Interaktivitas:** [Framer Motion](https://www.framer.com/motion/) & [Lucide React](https://lucide.dev/)
+- **Peta & Geospasial:** [Leaflet.js](https://leafletjs.com/) & [OpenStreetMap](https://www.openstreetmap.org/) (Interactive pin marker & dynamic geocoding)
+- **Basis Data & Layanan Backend:** [Supabase](https://supabase.com/) (PostgreSQL & Storage)
 
 ---
 
@@ -33,77 +21,78 @@ Repository ini dikembangkan oleh Tim sotodiensracing (Universitas Dian Nuswantor
 
 ### Prasyarat Sistem
 - Node.js versi 18.18.0 atau versi 20 LTS ke atas
-- Package manager: npm, pnpm, atau yarn
-- Akun atau instansi lokal PostgreSQL / Supabase
+- Package manager: `npm`
 
 ### Langkah Instalasi
 
-1. Klon repositori ke komputer lokal:
-```bash
-git clone https://github.com/norelac/dewijateng.git
-cd dewijateng
-```
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/norelac/dewijateng.git
+   cd dewijateng
+   ```
 
-2. Pasang dependensi proyek:
-```bash
-npm install
-```
+2. **Install dependensi:**
+   ```bash
+   npm install
+   ```
 
-3. Konfigurasi berkas environment:
-Salin berkas template lingkungan dan sesuaikan variabel koneksi database serta kunci API:
-```bash
-cp .env.example .env.local
-```
+3. **Jalankan development server:**
+   ```bash
+   npm run dev
+   ```
 
-Isi variabel konfigurasi di dalam `.env.local`:
-```env
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Konfigurasi Supabase / PostgreSQL
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# Konfigurasi Basis Data Langsung (Opsional / Migrasi)
-DATABASE_URL=postgresql://postgres:password@localhost:5432/dewijateng
-
-# Konfigurasi AI & Vision Service
-AI_VISION_API_KEY=your-api-key
-```
-
-4. Jalankan migrasi dan seeder basis data:
-```bash
-npm run db:push
-npm run db:seed
-```
-
-5. Jalankan server pengembangan lokal:
-```bash
-npm run dev
-```
-
-Aplikasi dapat diakses melalui peramban di `http://localhost:3000`.
+Aplikasi dapat langsung diakses melalui peramban di `http://localhost:4321`.
 
 ---
 
-## Progress Saat Ini
+## Progress Saat Ini (First Draft Submission)
 
-Proyek saat ini berada pada tahap **First Draft Submission (Perancangan Sistem & Setup Awal)**:
+Proyek telah menyelesaikan tahap perancangan dokumen, implementasi antarmuka utama (landing page, transparansi kas, dan dashboard pengelola desa), serta interaktivitas peta dan form aduan:
 
-- [x] Perancangan arsitektur sistem, skema basis data PostgreSQL, dan spesifikasi fungsional (PRD/BRD)
-- [x] Perancangan antarmuka pengguna (UI/UX) dan alur interaksi multi-peran di Figma
-- [x] Inisialisasi repositori Git dan penyusunan struktur arsitektur proyek
-- [ ] Setup lingkungan kerja Next.js 14 App Router dan konfigurasi Tailwind CSS
-- [ ] Implementasi antarmuka publik (katalog desa wisata dan form aduan)
-- [ ] Integrasi basis data PostgreSQL & PostGIS serta layanan penyimpanan berkas
-- [ ] Implementasi logika bisnis aliran kas desa (PADes) dan pelacakan SLA aduan
-- [ ] Pengujian sistem dan integrasi modul verifikasi berbasis AI
+### 1. Desain & Arsitektur Sistem
+- [x] Dokumen spesifikasi kebutuhan produk & bisnis ([PRD](docs/PRD.md) & [BRD](docs/BRD.md)).
+- [x] Dokumen arsitektur sistem dan skema data ([ARCHITECTURE.md](docs/ARCHITECTURE.md)).
+- [x] Perancangan visual UI/UX interaktif berbasis Design System di Figma.
+
+### 2. Beranda & Landing Page (`/`)
+- [x] **Hero Section**: Navigasi responsif, logo Pemprov Jateng, tagline, dan call-to-action terpadu.
+- [x] **Statistik KPI**: Counter interaktif mencakup desa wisata aktif, serapan anggaran, aduan selesai SLA, dan indeks kepatuhan.
+- [x] **Formulir Pelaporan Warga (`HomeReportForm`)**:
+  - Peta interaktif Leaflet dengan pin GPS draggable dan klik lokasi.
+  - Geocoding alamat pencarian lokasi otomatis.
+  - Input judul, deskripsi, dropzone unggah bukti media (foto/video).
+  - Opsi pelaporan anonim/privat.
+  - Generator modal tiket aduan publik (`DS-JTG-XXXX`).
+- [x] **Umpan Tindak Lanjut Aduan (`HomeReportFeed`)**:
+  - Filter kategori (*Semua*, *Akses & Jalan*, *Fasilitas & Sanitasi*).
+  - Slider interaktif perbandingan visual sebelum vs. sesudah perbaikan (*Proof of Fix*).
+  - Catatan desa dan transparansi biaya perbaikan.
+
+### 3. Transparansi Dana Desa (`/transparansi`)
+- [x] Ringkasan metrik anggaran (PADes, Dana Desa, CSR, Total Realisasi).
+- [x] Visualisasi grafik alokasi anggaran (pembangunan fisik, pemeliharaan, SDM, operasional).
+- [x] **Tabel Buku Kas Umum Digital (`CashbookTable`)**: Pencarian transaksi, filter jenis penerimaan/pengeluaran, dan verifikasi status nota/invoice.
+
+### 4. Dashboard Pengelola Desa (`/pengelola`)
+- [x] **Papan Pengelolaan Tiket (`PengelolaTicketBoard`)**: Pelacakan tiket aduan dengan tab alur kerja (*Masuk*, *Ditinjau*, *Dikerjakan*, *Selesai*).
+- [x] Pemantauan batas waktu SLA penanganan aduan (24–72 jam) dan tindakan eskalasi.
+
+### 5. Rute Navigasi Sementara (`/lapor` & `/edukasi`)
+- [x] Navigasi dinonaktifkan sementara di Navbar dengan status terarah ke formulir Beranda (`/#buat-laporan`).
+
+---
+
+## Roadmap Pengembangan Berikutnya
+- [ ] Integrasi penuh authentication dan row-level security (RLS) akun pengelola desa BUMDes di Supabase.
+- [ ] Otomasi audit nota kuitansi material dengan OCR Standar Satuan Harga (SSH) Pemprov Jateng.
+- [ ] Validasi koordinat EXIF gambar perbaikan otomatis oleh sistem.
+- [ ] Pengisian modul materi edukasi & pedoman teknis regulasi K3 pariwisata.
 
 ---
 
 ## Tim Pengembang
 
-Tim sotodiensracing - Universitas Dian Nuswantoro, Semarang:
-1. Muhammad Ilham Maulana - Hacker (Lead Fullstack Developer)
-2. Delvia Mareta Dealova - Hipster (UI/UX & Product Designer)
-3. Muhammad Iqbal Junialdi - Hustler (System Analyst & Project Strategist)
+**Tim sotodiensracing** - Universitas Dian Nuswantoro, Semarang:
+1. **Muhammad Ilham Maulana** - Hacker (Lead Fullstack Developer)
+2. **Delvia Mareta Dealova** - Hipster (UI/UX & Product Designer)
+3. **Muhammad Iqbal Junialdi** - Hustler (System Analyst & Project Strategist)

@@ -6,39 +6,51 @@ interface Props {
 const { currentPath = '/' } = Astro.props;
 
 const navItems = [
-  { href: '/', label: 'Beranda' },
-  { href: '/transparansi', label: 'Transparansi Dana' },
-  { href: '/lapor', label: 'Lapor' },
-  { href: '/edukasi', label: 'Edukasi & Panduan' },
+  { href: '/', label: 'Beranda', disabled: false },
+  { href: '/transparansi', label: 'Transparansi Dana', disabled: false },
+  { href: '/lapor', label: 'Lapor', disabled: true },
+  { href: '/edukasi', label: 'Edukasi & Panduan', disabled: true },
 ];
 ---
 
-<header class="w-full bg-white rounded-2xl border border-[#EBEBEB] shadow-sm px-4 sm:px-6 py-3">
+<header class="w-full bg-white rounded-[20px] border border-[#E6ECF5] shadow-[0_4px_20px_rgba(0,0,0,0.06)] px-5 sm:px-6 py-3.5">
   <div class="flex items-center justify-between">
-    <!-- Brand Logo -->
-    <a href="/" class="flex items-center gap-2.5 group">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-xs">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="m9 12 2 2 4-4"/>
-        </svg>
-      </div>
-      <span class="font-extrabold text-[#0D2453] text-base tracking-tight group-hover:text-blue-900 transition-colors">
+    <!-- Brand Logo with Pemprov Jateng Image -->
+    <a href="/" class="flex items-center gap-3 group shrink-0">
+      <img
+        src="/img/logo-pemprov-jateng.png"
+        alt="Logo Pemerintah Provinsi Jawa Tengah"
+        class="h-6 w-auto object-contain shrink-0"
+        width="23"
+        height="24"
+      />
+      <span class="font-bold text-[#0D2453] text-lg sm:text-xl tracking-tight group-hover:text-blue-900 transition-colors">
         DEWI JATENG
       </span>
     </a>
 
     <!-- Center Navigation Links with Active Underline -->
-    <nav class="hidden md:flex items-center gap-8">
+    <nav class="hidden md:flex items-center gap-7 lg:gap-8">
       {navItems.map((item) => {
+        if (item.disabled) {
+          return (
+            <span
+              class="text-sm text-[#0D2453]/40 font-semibold cursor-not-allowed select-none py-1"
+              title="Fitur sedang disiapkan"
+            >
+              {item.label}
+            </span>
+          );
+        }
+
         const isActive = currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href));
         return (
           <a
             href={item.href}
-            class={`text-sm font-semibold transition-all py-1 ${
+            class={`text-sm transition-all py-1 ${
               isActive
-                ? 'text-[#0D2453] border-b-2 border-[#0D2453] font-bold'
-                : 'text-[#4A5568] hover:text-[#0D2453]'
+                ? 'text-[#0D2453] font-bold border-b-2 border-[#0D2453]'
+                : 'text-[#0D2453]/70 font-semibold hover:text-[#0D2453]'
             }`}
           >
             {item.label}
@@ -50,8 +62,8 @@ const navItems = [
     <!-- Right Actions: + Buat Laporan & Masuk -->
     <div class="flex items-center gap-2.5">
       <a
-        href="/lapor"
-        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#0D2453] text-white hover:bg-[#132d66] transition-all shadow-xs"
+        href="/#buat-laporan"
+        class="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#0D2453] text-white hover:bg-[#132d66] transition-all shadow-xs active:scale-95"
       >
         <span class="text-sm font-light leading-none">+</span>
         <span>Buat Laporan</span>
@@ -59,7 +71,7 @@ const navItems = [
 
       <a
         href="/pengelola"
-        class="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-white text-[#0D2453] border border-slate-300 hover:bg-slate-50 transition-all shadow-xs"
+        class="inline-flex items-center px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white text-[#0D2453] border border-[#0D2453] hover:bg-slate-50 transition-all shadow-xs active:scale-95"
       >
         Masuk
       </a>
