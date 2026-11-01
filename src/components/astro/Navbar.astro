@@ -1,0 +1,68 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'Beranda' },
+  { href: '/transparansi', label: 'Transparansi Dana' },
+  { href: '/lapor', label: 'Lapor' },
+  { href: '/edukasi', label: 'Edukasi & Panduan' },
+];
+---
+
+<header class="w-full bg-white rounded-2xl border border-[#EBEBEB] shadow-sm px-4 sm:px-6 py-3">
+  <div class="flex items-center justify-between">
+    <!-- Brand Logo -->
+    <a href="/" class="flex items-center gap-2.5 group">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-xs">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <span class="font-extrabold text-[#0D2453] text-base tracking-tight group-hover:text-blue-900 transition-colors">
+        DEWI JATENG
+      </span>
+    </a>
+
+    <!-- Center Navigation Links with Active Underline -->
+    <nav class="hidden md:flex items-center gap-8">
+      {navItems.map((item) => {
+        const isActive = currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href));
+        return (
+          <a
+            href={item.href}
+            class={`text-sm font-semibold transition-all py-1 ${
+              isActive
+                ? 'text-[#0D2453] border-b-2 border-[#0D2453] font-bold'
+                : 'text-[#4A5568] hover:text-[#0D2453]'
+            }`}
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Right Actions: + Buat Laporan & Masuk -->
+    <div class="flex items-center gap-2.5">
+      <a
+        href="/lapor"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#0D2453] text-white hover:bg-[#132d66] transition-all shadow-xs"
+      >
+        <span class="text-sm font-light leading-none">+</span>
+        <span>Buat Laporan</span>
+      </a>
+
+      <a
+        href="/pengelola"
+        class="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-white text-[#0D2453] border border-slate-300 hover:bg-slate-50 transition-all shadow-xs"
+      >
+        Masuk
+      </a>
+    </div>
+  </div>
+</header>
